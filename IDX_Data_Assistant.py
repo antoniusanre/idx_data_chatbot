@@ -16,24 +16,22 @@ import time
 # SECTORS_API_KEY = st.secrets["SECTORS_API_KEY"]
 # CALENDAR_API_KEY = st.secrets["CALENDAR_API_KEY"]
 
+st.set_page_config(page_title="IDX Assistant", page_icon='🧑‍💻', layout="centered", initial_sidebar_state="auto", menu_items=None)
+
 
 if "sectors_api_key" not in st.session_state:
     st.session_state["sectors_api_key"] = ""
+    # st.session_state["sectors_api_key"] = SECTORS_API_KEY
 if "groq_api_key" not in st.session_state:
     st.session_state["groq_api_key"] = ""
+    # st.session_state["groq_api_key"] = GROQ_API_KEY
 
 with st.sidebar:
+    st.title("🗝️ Set Your :orange[Key] First!")
     SECTORS_API_KEY = st.text_input(
         "Sectors API Key", key="sectors_api_key", type="password"
     )
     GROQ_API_KEY = st.text_input("Groq API Key", key="groq_api_key", type="password")
-    button = st.button("Set API Keys")
-
-    if button:
-        st.write("API Keys set!")
-
-    st.link_button("Get Sectors API Key", "https://sectors.app/api")
-    st.link_button("Get Groq API Key", "https://console.groq.com/keys")
 
 def get_today_date() -> str:
     """
@@ -238,7 +236,6 @@ def get_top_companies_by_tx_volume(
 
     return [message, result] if message != [] else result
 
-
 @tool
 def get_top_companies_by_growth(
     classifications: str, sub_sector: str, top_n: int = 1
@@ -315,7 +312,7 @@ groq_api_key=GROQ_API_KEY)
 agent = create_tool_calling_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True,  handle_parsing_errors=True)
 
-st.title("IDA (IDX Data Assitant)")
+st.title("🧑‍💻:red[I]DA (:red[IDX] Data Assitant)")
 
 def generate_response(input_text):
     result = agent_executor.invoke({"input": input_text})
@@ -346,9 +343,11 @@ if prompt := st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        stream = generate_response(prompt)
-        response = stream
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        try:
+            stream = generate_response(prompt)
+        except:
+            st.warning("I'm sorry there's an error while processing your query. I can help you with other queries.")
+    st.session_state.messages.append({"role": "assistant", "content": stream})
 
 def test_query():
     query_1 = "What are the top 3 companies by transaction volume over the last 7 days?"
