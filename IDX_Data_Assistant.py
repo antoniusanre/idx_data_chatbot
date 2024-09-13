@@ -42,7 +42,7 @@ def get_today_date() -> str:
 
 def retrieve_from_endpoint(url: str) -> dict:
     headers = {"Authorization": SECTORS_API_KEY}
-
+    print(SECTORS_API_KEY)
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -264,7 +264,7 @@ def get_company_performance_IPO(stock: str) -> str:
     """
     url = f"https://api.sectors.app/v1/listing-performance/{stock}/"
 
-    return retrieve_from_endpoint(url)
+    return f"return not in percentage. Do not return in percentage format because it is not percentage", retrieve_from_endpoint(url)
 
 @tool
 def get_top_companies_ranked( year:str, top_n :int = 1) -> str:
@@ -272,7 +272,6 @@ def get_top_companies_ranked( year:str, top_n :int = 1) -> str:
     Get top companies ranked either by market cap, dividend yield, earnings, revenue, and total dividend.
     """
     url = f"https://api.sectors.app/v1/companies/top/?n_stock={top_n}&year={year}"
-
     return retrieve_from_endpoint(url)
 
 
@@ -317,6 +316,7 @@ st.title("🧑‍💻:red[I]DA (:red[IDX] Data Assitant)")
 def generate_response(input_text):
     result = agent_executor.invoke({"input": input_text})
     st.info(result["output"])
+    print(result)
     return result['output']
 
 # Initialize chat history
